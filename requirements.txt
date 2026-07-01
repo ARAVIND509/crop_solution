@@ -1,0 +1,9 @@
+Flask
+gunicorn
+pandas
+gtts
+werkzeug
+scikit-learn
+Pillow
+numpy
+joblib

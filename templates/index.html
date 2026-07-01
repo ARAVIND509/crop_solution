@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>పంట సహాయకుడు – Crop AI Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g1:#1a5c30;--g2:#27863f;--g3:#4caf50;--g4:#a5d6a7;--g5:#e8f5e9;
+  --gold:#f9a825;--gold2:#ffd54f;--brown:#4e342e;--cream:#fffde7;
+  --text:#1b2c1b;--muted:#5a7a5a;
+  --shadow:0 8px 32px rgba(27,92,48,.18);--r:18px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Poppins',sans-serif;background:var(--g5);color:var(--text);min-height:100vh;overflow-x:hidden;}
+.bg{position:fixed;inset:0;z-index:0;
+  background:radial-gradient(ellipse 70% 50% at 10% 5%,rgba(76,175,80,.22),transparent 60%),
+    radial-gradient(ellipse 60% 60% at 90% 90%,rgba(165,214,167,.28),transparent 60%),
+    radial-gradient(ellipse 50% 40% at 55% 35%,rgba(249,168,37,.06),transparent 60%),
+    linear-gradient(160deg,#e8f5e9 0%,#f1f8e9 50%,#e8f5e9 100%);}
+.leaf{position:fixed;font-size:26px;opacity:.12;animation:drift linear infinite;pointer-events:none;z-index:0;}
+.leaf:nth-child(1){left:4%;animation-duration:19s;animation-delay:0s;}
+.leaf:nth-child(2){left:22%;animation-duration:23s;animation-delay:4s;font-size:18px;}
+.leaf:nth-child(3){left:42%;animation-duration:17s;animation-delay:7s;font-size:32px;}
+.leaf:nth-child(4){left:68%;animation-duration:21s;animation-delay:2s;}
+.leaf:nth-child(5){left:85%;animation-duration:25s;animation-delay:9s;font-size:20px;}
+@keyframes drift{0%{transform:translateY(-60px) rotate(0deg);}100%{transform:translateY(110vh) rotate(360deg);}}
+.wrap{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;}
+
+/* HEADER */
+header{background:linear-gradient(135deg,var(--g1),var(--g2));padding:16px 28px;
+  display:flex;align-items:center;gap:14px;box-shadow:0 4px 20px rgba(27,92,48,.4);}
+.logo{width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,var(--gold),var(--gold2));
+  display:flex;align-items:center;justify-content:center;font-size:24px;
+  box-shadow:0 4px 12px rgba(249,168,37,.4);flex-shrink:0;}
+.brand-name{font-family:'Noto Sans Telugu',sans-serif;font-size:20px;color:#fff;font-weight:700;line-height:1.2;}
+.brand-sub{font-size:11px;color:rgba(255,255,255,.7);margin-top:1px;letter-spacing:.05em;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--g1) 0%,#2e7d32 45%,var(--g2) 100%);
+  padding:44px 28px 52px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:"🌾";font-size:130px;opacity:.06;position:absolute;right:-15px;top:-15px;
+  animation:sway 4s ease-in-out infinite;}
+@keyframes sway{0%,100%{transform:rotate(-5deg);}50%{transform:rotate(5deg);}}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.3);border-radius:100px;padding:7px 18px;
+  font-size:12px;color:rgba(255,255,255,.9);font-weight:500;letter-spacing:.05em;margin-bottom:18px;}
+.hero-tag span{width:7px;height:7px;background:var(--gold);border-radius:50%;animation:blink 1.6s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.hero h2{font-family:'Noto Sans Telugu',sans-serif;font-size:clamp(22px,5vw,36px);
+  color:#fff;font-weight:700;margin-bottom:10px;line-height:1.25;}
+.hero h2 em{font-style:normal;color:var(--gold2);}
+.hero p{font-size:15px;color:rgba(255,255,255,.8);max-width:480px;margin:0 auto 28px;line-height:1.7;}
+.hero-stats{display:flex;justify-content:center;gap:32px;flex-wrap:wrap;}
+.stat .stat-n{font-size:26px;font-weight:700;color:var(--gold2);}
+.stat .stat-l{font-size:11px;color:rgba(255,255,255,.65);margin-top:2px;letter-spacing:.04em;}
+
+/* OPTIONAL HINT BANNER */
+.opt-banner{
+  background:linear-gradient(90deg,rgba(249,168,37,.12),rgba(76,175,80,.1));
+  border:1.5px solid rgba(249,168,37,.35);border-radius:12px;
+  margin:22px 22px 0;padding:12px 18px;
+  display:flex;align-items:center;gap:12px;
+}
+.opt-banner .oi{font-size:22px;flex-shrink:0;}
+.opt-banner p{font-size:13px;color:var(--brown);line-height:1.5;}
+.opt-banner strong{font-weight:700;}
+
+/* FORM */
+.form-wrap{max-width:800px;margin:22px auto 60px;padding:0 18px;}
+.form-card{background:rgba(255,255,255,.93);backdrop-filter:blur(16px);
+  border:1.5px solid rgba(76,175,80,.18);border-radius:var(--r);
+  box-shadow:var(--shadow);overflow:hidden;}
+
+.sec-head{background:linear-gradient(90deg,var(--g5),rgba(255,255,255,.7));
+  padding:18px 26px 14px;border-bottom:1px solid rgba(76,175,80,.12);
+  display:flex;align-items:center;gap:12px;}
+.sec-head .ico{font-size:22px;}
+.sec-head h3{font-size:15px;font-weight:700;color:var(--g1);}
+.sec-head p{font-size:12px;color:var(--muted);margin-top:2px;}
+
+.form-body{padding:22px 26px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:560px){.grid2{grid-template-columns:1fr;}}
+
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:13px;font-weight:600;color:var(--g1);display:flex;align-items:center;gap:6px;}
+.opt-tag{font-size:10px;font-weight:600;background:#fff3e0;color:#e65100;
+  padding:2px 7px;border-radius:100px;letter-spacing:.04em;}
+.field input,.field select{
+  padding:11px 14px;border:1.5px solid #c8e6c9;border-radius:10px;
+  background:#f9fff9;color:var(--text);font-size:15px;
+  font-family:'Poppins',sans-serif;transition:all .2s;}
+.field input:focus,.field select:focus{
+  outline:none;border-color:var(--g3);background:#fff;
+  box-shadow:0 0 0 3px rgba(76,175,80,.15);}
+.field input::placeholder{color:#aaa;}
+.field .hint{font-size:11px;color:var(--muted);}
+
+/* CROP CHIPS */
+.chip-wrap{padding:0 26px;margin-bottom:4px;}
+.chip-wrap h4{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;
+  text-transform:uppercase;margin-bottom:10px;}
+.chips{display:flex;flex-wrap:wrap;gap:7px;}
+.chip{background:var(--g5);border:1.5px solid #c8e6c9;border-radius:100px;
+  font-size:12px;padding:5px 13px;cursor:pointer;color:var(--g1);font-weight:500;
+  transition:all .15s;font-family:'Noto Sans Telugu',sans-serif;}
+.chip:hover,.chip.active{background:var(--g3);color:#fff;border-color:var(--g3);}
+
+/* UPLOAD */
+.upload-wrap{padding:0 26px 22px;}
+.upload-box{border:2.5px dashed #a5d6a7;border-radius:14px;padding:28px 20px;
+  text-align:center;cursor:pointer;transition:all .2s;background:var(--g5);}
+.upload-box:hover{border-color:var(--g2);background:#f0faf0;}
+.upload-box.has-file{border-color:var(--g2);background:#e8f8ea;border-style:solid;}
+.upload-ico{font-size:40px;margin-bottom:8px;}
+.upload-box p{font-size:14px;font-weight:600;color:var(--g1);margin-bottom:3px;}
+.upload-box small{font-size:12px;color:var(--muted);}
+#fileInput{display:none;}
+#previewImg{max-width:100%;max-height:170px;object-fit:contain;border-radius:10px;margin-top:10px;display:none;}
+
+/* SUBMIT */
+.submit-wrap{padding:0 26px 26px;}
+.btn-submit{
+  width:100%;background:linear-gradient(135deg,var(--g1),var(--g2));
+  color:#fff;font-size:16px;font-weight:700;padding:16px;border:none;
+  border-radius:12px;cursor:pointer;font-family:'Poppins',sans-serif;
+  box-shadow:0 6px 24px rgba(39,134,63,.35);transition:all .25s;
+  display:flex;align-items:center;justify-content:center;gap:10px;}
+.btn-submit:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(39,134,63,.42);}
+.btn-submit:active{transform:translateY(0);}
+
+/* LOADING */
+.loading-overlay{display:none;position:fixed;inset:0;z-index:999;
+  background:rgba(27,92,48,.78);backdrop-filter:blur(4px);
+  flex-direction:column;align-items:center;justify-content:center;gap:22px;}
+.loading-overlay.show{display:flex;}
+.spinner{width:60px;height:60px;border:5px solid rgba(255,255,255,.25);
+  border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-size:18px;font-weight:600;color:#fff;
+  font-family:'Noto Sans Telugu',sans-serif;text-align:center;}
+.loading-sub{font-size:13px;color:rgba(255,255,255,.7);}
+
+footer{background:var(--g1);color:rgba(255,255,255,.65);text-align:center;
+  font-size:12px;padding:14px;margin-top:auto;}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="leaf">🍃</div><div class="leaf">🌿</div><div class="leaf">🍀</div>
+<div class="leaf">🌱</div><div class="leaf">🍃</div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">🌾 AI విశ్లేషిస్తోంది…</div>
+  <div class="loading-sub">Analyzing with AI, please wait…</div>
+</div>
+
+<div class="wrap">
+<header>
+  <div class="logo">🌾</div>
+  <div>
+    <div class="brand-name">పంట సహాయకుడు</div>
+    <div class="brand-sub">CROP AI ASSISTANT • AI పంట విశ్లేషణ</div>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag"><span></span> AI-Powered Crop Intelligence</div>
+  <h2>మీ పంటకు <em>తెలివైన సలహా</em></h2>
+  <p>పంట దిగుబడి అంచనా · వ్యాధి గుర్తింపు · ఎరువు సిఫారసు<br>
+     Yield Prediction · Disease Detection · Fertilizer Advice</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-n">15+</div><div class="stat-l">పంటలు / Crops</div></div>
+    <div class="stat"><div class="stat-n">AI</div><div class="stat-l">Disease Detection</div></div>
+    <div class="stat"><div class="stat-n">తెలుగు</div><div class="stat-l">Full Support</div></div>
+  </div>
+</div>
+
+<!-- OPTIONAL FIELDS HINT -->
+<div class="opt-banner">
+  <div class="oi">💡</div>
+  <p><strong>అన్ని ఫీల్డ్‌లు నమోదు చేయడం తప్పనిసరి కాదు!</strong><br>
+  మీరు ఏదైనా ఖాళీగా వదిలితే, AI సగటు విలువలతో అంచనా వేస్తుంది •
+  Fields marked Optional can be left blank — AI will use average values automatically.</p>
+</div>
+
+<div class="form-wrap">
+<form class="form-card" method="POST" action="/predict" enctype="multipart/form-data" onsubmit="showLoading()">
+
+  <!-- SECTION 1 -->
+  <div class="sec-head">
+    <div class="ico">🌱</div>
+    <div>
+      <h3>పంట వివరాలు – Crop Details</h3>
+      <p>మీ పంట మరియు నేల రకం ఎంచుకోండి (Required)</p>
+    </div>
+  </div>
+  <div class="form-body">
+    <div class="chip-wrap" style="padding:0;margin-bottom:14px;">
+      <h4>వేగంగా ఎంచుకోండి / Quick Select</h4>
+      <div class="chips" id="cropChips">
+        <div class="chip" onclick="selectCrop('rice')">వరి 🌾</div>
+        <div class="chip" onclick="selectCrop('tomato')">టమాటా 🍅</div>
+        <div class="chip" onclick="selectCrop('potato')">బంగాళాదుంప 🥔</div>
+        <div class="chip" onclick="selectCrop('maize')">మొక్కజొన్న 🌽</div>
+        <div class="chip" onclick="selectCrop('wheat')">గోధుమ</div>
+        <div class="chip" onclick="selectCrop('cotton')">పత్తి</div>
+        <div class="chip" onclick="selectCrop('green gram')">పెసలు</div>
+        <div class="chip" onclick="selectCrop('groundnut')">వేరుశెనగ 🥜</div>
+        <div class="chip" onclick="selectCrop('sugarcane')">చెరకు</div>
+        <div class="chip" onclick="selectCrop('chilli')">మిరపకాయలు 🌶️</div>
+        <div class="chip" onclick="selectCrop('jowar')">జొన్న</div>
+        <div class="chip" onclick="selectCrop('sunflower')">పొద్దుతిరుగుడు 🌻</div>
+        <div class="chip" onclick="selectCrop('turmeric')">పసుపు</div>
+        <div class="chip" onclick="selectCrop('soybean')">సోయాబీన్</div>
+        <div class="chip" onclick="selectCrop('red gram')">కందులు</div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="field">
+        <label>🌿 పంట రకం / Crop Type</label>
+        <select name="crop_type" id="cropSelect" required>
+          <option value="">-- పంట ఎంచుకోండి --</option>
+          <option value="rice">వరి – Rice 🌾</option>
+          <option value="tomato">టమాటా – Tomato 🍅</option>
+          <option value="potato">బంగాళాదుంప – Potato 🥔</option>
+          <option value="maize">మొక్కజొన్న – Maize 🌽</option>
+          <option value="wheat">గోధుమ – Wheat</option>
+          <option value="cotton">పత్తి – Cotton</option>
+          <option value="soybean">సోయాబీన్ – Soybean</option>
+          <option value="groundnut">వేరుశెనగ – Groundnut 🥜</option>
+          <option value="sugarcane">చెరకు – Sugarcane</option>
+          <option value="green gram">పెసలు – Green Gram</option>
+          <option value="chilli">మిరపకాయలు – Chilli 🌶️</option>
+          <option value="jowar">జొన్న – Jowar</option>
+          <option value="sunflower">పొద్దుతిరుగుడు – Sunflower 🌻</option>
+          <option value="turmeric">పసుపు – Turmeric</option>
+          <option value="red gram">కందులు – Red Gram</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>🪨 నేల రకం / Soil Type</label>
+        <select name="soil_type" required>
+          <option value="">-- నేల ఎంచుకోండి --</option>
+          <option value="red">ఎర్ర నేల – Red Soil</option>
+          <option value="black">నల్ల నేల – Black Soil</option>
+          <option value="alluvial">ఒండ్రు నేల – Alluvial Soil</option>
+          <option value="loamy">లోమీ నేల – Loamy Soil</option>
+          <option value="clay">బంకమట్టి – Clay Soil</option>
+          <option value="sandy">ఇసుక నేల – Sandy Soil</option>
+          <option value="silt">పూడిక నేల – Silt Soil</option>
+          <option value="peaty">పీటీ నేల – Peaty Soil</option>
+          <option value="chalky">సుద్ద నేల – Chalky Soil</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="sec-head">
+    <div class="ico">📊</div>
+    <div>
+      <h3>పొలం వివరాలు – Field Data <span style="font-size:11px;background:#fff3e0;color:#e65100;padding:2px 8px;border-radius:100px;font-weight:600;margin-left:6px;">Optional</span></h3>
+      <p>ఖాళీగా వదిలినా AI సగటు విలువలు వాడుతుంది • Leave blank for AI to use averages</p>
+    </div>
+  </div>
+  <div class="form-body">
+    <div class="grid2">
+      <div class="field">
+        <label>💧 వర్షపాతం / Rainfall (mm) <span class="opt-tag">Optional</span></label>
+        <input type="number" name="rainfall" min="0" max="4000" placeholder="సగటు: {{ defaults.rainfall }} mm">
+        <span class="hint">ఖాళీ వదిలితే సగటు {{ defaults.rainfall }}mm వాడతారు</span>
+      </div>
+      <div class="field">
+        <label>🌡️ ఉష్ణోగ్రత / Temperature (°C) <span class="opt-tag">Optional</span></label>
+        <input type="number" name="temperature" min="0" max="55" step="0.1" placeholder="సగటు: {{ defaults.temperature }}°C">
+        <span class="hint">ఖాళీ వదిలితే సగటు {{ defaults.temperature }}°C వాడతారు</span>
+      </div>
+      <div class="field">
+        <label>🌍 నేల నాణ్యత / Soil Quality (1–10) <span class="opt-tag">Optional</span></label>
+        <input type="number" name="soil_quality" min="1" max="10" step="0.1" placeholder="సగటు: {{ defaults.soil_quality }}">
+        <span class="hint">1 = చాలా పేద నేల · 10 = అత్యుత్తమ నేల</span>
+      </div>
+      <div class="field">
+        <label>📐 వైశాల్యం / Area (Acres) <span class="opt-tag">Optional</span></label>
+        <input type="number" name="acre" min="0.1" max="1000" step="0.1" placeholder="సగటు: {{ defaults.acre }} ఎకరాలు">
+        <span class="hint">పొలం విస్తీర్ణం ఎకరాలలో</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: IMAGE -->
+  <div class="sec-head">
+    <div class="ico">📸</div>
+    <div>
+      <h3>ఆకు ఫోటో – Leaf Photo <span style="font-size:11px;background:#fff3e0;color:#e65100;padding:2px 8px;border-radius:100px;font-weight:600;margin-left:6px;">Optional</span></h3>
+      <p>వ్యాధి కచ్చితంగా గుర్తించడానికి ఆకు ఫోటో ఇవ్వండి • Upload for AI disease detection</p>
+    </div>
+  </div>
+  <div class="upload-wrap">
+    <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()"
+         ondragover="event.preventDefault();this.style.borderColor='#27863f'"
+         ondrop="handleDrop(event)">
+      <div class="upload-ico" id="uploadIco">📷</div>
+      <p id="uploadText">ఇక్కడ క్లిక్ చేయండి లేదా ఫోటో లాగండి</p>
+      <small id="uploadSub">Click or drag leaf photo here • JPG, PNG supported • Optional</small>
+      <input type="file" id="fileInput" name="image" accept="image/*" onchange="handleFile(this)">
+      <img id="previewImg">
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="submit-wrap">
+    <button type="submit" class="btn-submit" id="submitBtn">
+      🔍 AI విశ్లేషించు — Analyze Now
+    </button>
+  </div>
+
+</form>
+</div>
+<footer>🌾 పంట సహాయకుడు – Crop AI Assistant | AI Powered | రైతు మిత్రుడు</footer>
+</div>
+
+<script>
+function selectCrop(val){
+  document.getElementById('cropSelect').value=val;
+  document.querySelectorAll('.chip').forEach(c=>{
+    c.classList.toggle('active', c.getAttribute('onclick')===`selectCrop('${val}')`);
+  });
+}
+function handleFile(input){
+  const file=input.files[0]; if(!file)return;
+  document.getElementById('uploadBox').classList.add('has-file');
+  document.getElementById('uploadIco').textContent='✅';
+  document.getElementById('uploadText').textContent=file.name;
+  document.getElementById('uploadSub').textContent='ఫోటో సిద్ధంగా ఉంది / Photo ready';
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=document.getElementById('previewImg');
+    img.src=e.target.result; img.style.display='block';
+  };
+  reader.readAsDataURL(file);
+}
+function handleDrop(e){
+  e.preventDefault();
+  const file=e.dataTransfer.files[0];
+  if(file&&file.type.startsWith('image/')){
+    const dt=new DataTransfer(); dt.items.add(file);
+    document.getElementById('fileInput').files=dt.files;
+    handleFile(document.getElementById('fileInput'));
+  }
+}
+function showLoading(){
+  document.getElementById('loadingOverlay').classList.add('show');
+}
+</script>
+</body>
+</html>

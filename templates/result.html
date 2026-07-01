@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ఫలితాలు – Crop AI Results</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g1:#1a5c30;--g2:#27863f;--g3:#4caf50;--g4:#a5d6a7;--g5:#e8f5e9;
+  --gold:#f9a825;--gold2:#ffd54f;--brown:#4e342e;
+  --r1:#c62828;--r5:#ffebee;--b1:#1565c0;--b5:#e3f2fd;
+  --text:#1b2c1b;--muted:#5a7a5a;
+  --shadow:0 8px 32px rgba(27,92,48,.15);--r:18px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Poppins',sans-serif;background:var(--g5);color:var(--text);min-height:100vh;}
+.bg{position:fixed;inset:0;z-index:0;
+  background:radial-gradient(ellipse 70% 50% at 10% 5%,rgba(76,175,80,.18),transparent 60%),
+    radial-gradient(ellipse 60% 60% at 90% 90%,rgba(165,214,167,.22),transparent 60%),
+    linear-gradient(160deg,#e8f5e9 0%,#f1f8e9 100%);}
+.leaf{position:fixed;font-size:24px;opacity:.09;animation:drift linear infinite;pointer-events:none;z-index:0;}
+.leaf:nth-child(1){left:6%;animation-duration:21s;}
+.leaf:nth-child(2){left:38%;animation-duration:26s;animation-delay:6s;}
+.leaf:nth-child(3){left:75%;animation-duration:19s;animation-delay:3s;}
+@keyframes drift{0%{transform:translateY(-60px) rotate(0deg);}100%{transform:translateY(110vh) rotate(360deg);}}
+.wrap{position:relative;z-index:1;min-height:100vh;}
+
+/* HEADER */
+header{background:linear-gradient(135deg,var(--g1),var(--g2));padding:15px 26px;
+  display:flex;align-items:center;gap:14px;box-shadow:0 4px 20px rgba(27,92,48,.4);}
+.logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--gold2));
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.brand-name{font-family:'Noto Sans Telugu',sans-serif;font-size:17px;color:#fff;font-weight:700;}
+.brand-sub{font-size:11px;color:rgba(255,255,255,.65);}
+.hbtns{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
+.hbtn{background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);color:#fff;
+  font-size:12px;font-weight:600;padding:7px 14px;border-radius:100px;cursor:pointer;
+  font-family:'Poppins',sans-serif;text-decoration:none;display:inline-flex;
+  align-items:center;gap:5px;transition:background .2s;}
+.hbtn:hover{background:rgba(255,255,255,.28);}
+
+/* SUCCESS BANNER */
+.banner{background:linear-gradient(135deg,var(--g1) 0%,#2e7d32 50%,var(--g2) 100%);
+  padding:36px 26px 48px;text-align:center;position:relative;overflow:hidden;}
+.banner::after{content:"🌾";font-size:120px;opacity:.06;position:absolute;right:-10px;top:-10px;
+  animation:sway 4s ease-in-out infinite;}
+@keyframes sway{0%,100%{transform:rotate(-5deg);}50%{transform:rotate(5deg);}}
+.banner-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.18);
+  border:1px solid rgba(255,255,255,.32);border-radius:100px;padding:6px 16px;
+  font-size:12px;color:rgba(255,255,255,.9);font-weight:500;margin-bottom:14px;}
+.banner h2{font-family:'Noto Sans Telugu',sans-serif;font-size:clamp(18px,4vw,28px);
+  color:#fff;font-weight:700;margin-bottom:8px;}
+.banner p{font-size:14px;color:rgba(255,255,255,.78);margin-bottom:22px;}
+.crop-row{display:inline-flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center;
+  background:rgba(255,255,255,.14);border-radius:100px;padding:10px 22px;}
+.ci{display:flex;align-items:center;gap:6px;font-size:13px;color:rgba(255,255,255,.88);}
+.ci strong{font-weight:700;color:var(--gold2);}
+.ci-sep{color:rgba(255,255,255,.35);}
+
+/* APPROXIMATE NOTICE */
+.approx-notice{
+  background:linear-gradient(90deg,rgba(249,168,37,.12),rgba(76,175,80,.08));
+  border:1.5px solid rgba(249,168,37,.4);border-radius:10px;
+  margin:18px 18px 0;padding:12px 18px;
+  display:flex;align-items:flex-start;gap:10px;
+}
+.an-ico{font-size:20px;flex-shrink:0;margin-top:1px;}
+.an-text{font-size:13px;color:var(--brown);line-height:1.5;}
+.an-text strong{font-weight:700;}
+
+/* CONTENT */
+.content{max-width:860px;margin:0 auto;padding:24px 18px 56px;}
+
+/* YIELD CARDS */
+.yield-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+@media(max-width:500px){.yield-row{grid-template-columns:1fr;}}
+.yield-card{background:#fff;border-radius:var(--r);border:1.5px solid rgba(76,175,80,.18);
+  box-shadow:var(--shadow);padding:22px;text-align:center;position:relative;overflow:hidden;}
+.yield-card::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(76,175,80,.04),transparent);pointer-events:none;}
+.yc-ico{font-size:36px;margin-bottom:8px;}
+.yc-label{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;margin-bottom:5px;}
+.yc-num{font-size:34px;font-weight:700;color:var(--g1);line-height:1;}
+.yc-unit{font-size:13px;color:var(--muted);margin-top:3px;}
+.yc-te{font-family:'Noto Sans Telugu',sans-serif;font-size:13px;color:var(--muted);margin-top:3px;}
+.yc-voice{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;
+  background:var(--g5);border:1.5px solid var(--g3);font-size:13px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;}
+.yc-voice:hover{background:var(--g4);}
+
+/* INFO GRID */
+.info-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px;}
+@media(max-width:620px){.info-grid{grid-template-columns:1fr;}}
+@media(min-width:380px) and (max-width:620px){.info-grid{grid-template-columns:1fr 1fr;}}
+.info-card{background:#fff;border-radius:16px;border:1.5px solid rgba(76,175,80,.14);
+  box-shadow:0 4px 14px rgba(27,92,48,.09);padding:18px;}
+.ic-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;
+  padding:3px 11px;border-radius:100px;letter-spacing:.03em;}
+.badge-hi{background:var(--r5);color:var(--r1);}
+.badge-med{background:#fff8e1;color:#e65100;}
+.badge-ok{background:var(--g5);color:var(--g1);}
+.badge-fert{background:var(--b5);color:var(--b1);}
+.badge-pest{background:#f3e5f5;color:#6a1b9a;}
+.ic-vbtn{width:26px;height:26px;border-radius:50%;border:1.5px solid;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:12px;background:transparent;}
+.ic-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.07em;margin-bottom:5px;}
+.ic-value{font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px;line-height:1.3;}
+.ic-te{font-family:'Noto Sans Telugu',sans-serif;font-size:13px;color:var(--muted);}
+.ic-detail{font-size:11px;color:var(--muted);margin-top:7px;padding-top:7px;
+  border-top:1px solid #f0f0f0;line-height:1.5;}
+
+/* CONFIDENCE */
+.conf-wrap{background:var(--g5);border-radius:12px;padding:14px 20px;margin-bottom:20px;}
+.conf-top{display:flex;justify-content:space-between;align-items:center;
+  font-size:13px;font-weight:600;color:var(--g1);margin-bottom:7px;}
+.conf-bar{height:9px;background:#c8e6c9;border-radius:100px;overflow:hidden;}
+.conf-fill{height:100%;border-radius:100px;
+  background:linear-gradient(90deg,var(--g3),var(--g2));transition:width 1.2s ease;}
+.conf-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:3px;}
+
+/* REMEDY CARD */
+.remedy-card{background:#fff;border-radius:var(--r);border:1.5px solid rgba(76,175,80,.15);
+  box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px;}
+.rc-head{padding:18px 22px;display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid rgba(76,175,80,.1);}
+.rc-ico{font-size:28px;flex-shrink:0;}
+.rc-title{font-size:15px;font-weight:700;color:var(--g1);}
+.rc-sub{font-size:12px;color:var(--muted);margin-top:2px;font-family:'Noto Sans Telugu',sans-serif;}
+.rc-vbtn{margin-left:auto;background:var(--g5);border:1.5px solid var(--g3);color:var(--g1);
+  font-size:11px;font-weight:600;padding:6px 13px;border-radius:100px;cursor:pointer;
+  font-family:'Poppins',sans-serif;}
+.rc-body{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+@media(max-width:520px){.rc-body{grid-template-columns:1fr;}}
+.rc-section{padding:18px 22px;border-right:1px solid rgba(76,175,80,.08);}
+.rc-section:last-child{border-right:none;}
+.rc-section h4{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;
+  text-transform:uppercase;margin-bottom:12px;}
+.step{display:flex;align-items:flex-start;gap:9px;margin-bottom:9px;}
+.step-n{width:22px;height:22px;border-radius:50%;background:var(--g3);
+  color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-t{font-size:13px;color:var(--text);line-height:1.5;}
+.step-t strong{font-weight:600;color:var(--g1);}
+
+/* IMAGE CARD */
+.img-card{background:#fff;border-radius:var(--r);border:1.5px solid rgba(76,175,80,.14);
+  box-shadow:0 4px 14px rgba(27,92,48,.09);overflow:hidden;margin-bottom:20px;}
+.img-card-head{padding:12px 18px;border-bottom:1px solid #f0f0f0;font-size:13px;font-weight:700;color:var(--g1);}
+.img-card img{width:100%;max-height:260px;object-fit:contain;background:#f9fff9;padding:12px;}
+
+/* AUDIO */
+.audio-card{background:#fff;border-radius:16px;border:1.5px solid rgba(76,175,80,.14);
+  padding:18px 22px;margin-bottom:20px;}
+.audio-card h3{font-size:14px;font-weight:700;color:var(--g1);margin-bottom:12px;}
+.audio-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+.audio-label{font-size:12px;font-weight:600;color:var(--muted);min-width:80px;}
+.audio-row audio{flex:1;min-width:180px;height:34px;}
+
+/* TIPS */
+.tips-card{background:linear-gradient(135deg,#fffde7,#fff9c4);
+  border:1.5px solid #f9a825;border-radius:var(--r);padding:20px 22px;margin-bottom:20px;}
+.tips-head{display:flex;align-items:center;gap:9px;margin-bottom:14px;}
+.tips-head h3{font-size:14px;font-weight:700;color:var(--brown);}
+.tip{display:flex;align-items:flex-start;gap:9px;margin-bottom:9px;}
+.tip-ico{font-size:17px;flex-shrink:0;}
+.tip-text{font-size:13px;color:var(--brown);line-height:1.5;}
+.tip-te{font-family:'Noto Sans Telugu',sans-serif;}
+
+/* ACTION */
+.action-row{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-p{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border:none;
+  font-size:14px;font-weight:700;padding:12px 22px;border-radius:12px;cursor:pointer;
+  font-family:'Poppins',sans-serif;text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;transition:all .2s;
+  box-shadow:0 4px 16px rgba(39,134,63,.32);}
+.btn-p:hover{transform:translateY(-2px);}
+.btn-o{background:transparent;color:var(--g1);border:2px solid var(--g3);
+  font-size:14px;font-weight:700;padding:10px 22px;border-radius:12px;cursor:pointer;
+  font-family:'Poppins',sans-serif;text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;transition:all .2s;}
+.btn-o:hover{background:var(--g5);}
+
+footer{background:var(--g1);color:rgba(255,255,255,.6);text-align:center;font-size:12px;padding:14px;}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="leaf">🍃</div><div class="leaf">🌿</div><div class="leaf">🍀</div>
+<div class="wrap">
+
+<header>
+  <div class="logo">🌾</div>
+  <div>
+    <div class="brand-name">ఫలితాలు – Results</div>
+    <div class="brand-sub">AI పంట విశ్లేషణ ఫలితాలు • Crop Analysis Results</div>
+  </div>
+  <div class="hbtns">
+    <a href="/" class="hbtn">← మళ్ళీ / New</a>
+    <button class="hbtn" onclick="playTeluguAudio()">🔊 వినండి</button>
+    <button class="hbtn" onclick="stopAudio()">⏹ ఆపు</button>
+  </div>
+</header>
+
+<!-- BANNER -->
+<div class="banner">
+  <div class="banner-tag">✅ AI విశ్లేషణ పూర్తయింది • Analysis Complete</div>
+  <h2>మీ పంట ఫలితాలు సిద్ధంగా ఉన్నాయి! 🎉</h2>
+  <p>Your AI-powered crop analysis is ready</p>
+  <div class="crop-row">
+    <div class="ci">🌿 పంట: <strong>{{ crop_telugu }} ({{ crop_type|title }})</strong></div>
+    <div class="ci-sep">|</div>
+    <div class="ci">🪨 నేల: <strong>{{ soil_telugu }}</strong></div>
+    <div class="ci-sep">|</div>
+    <div class="ci">📐 <strong>{{ acre }} ఎకరాలు</strong></div>
+  </div>
+</div>
+
+<!-- APPROXIMATE NOTICE -->
+{% if is_approximate %}
+<div class="approx-notice">
+  <div class="an-ico">📊</div>
+  <div class="an-text">
+    <strong>అంచనా విలువలు వాడబడ్డాయి / Approximate values used:</strong>
+    {% if 'rainfall' in used_defaults %}వర్షపాతం ({{ rainfall }}mm){% endif %}
+    {% if 'temperature' in used_defaults %}, ఉష్ణోగ్రత ({{ temperature }}°C){% endif %}
+    {% if 'soil_quality' in used_defaults %}, నేల నాణ్యత ({{ soil_quality }}){% endif %}
+    {% if 'acre' in used_defaults %}, వైశాల్యం ({{ acre }} ఎకరాలు){% endif %}
+    — ఈ విలువలు మీ పొలం సగటు విలువలపై ఆధారపడి ఉన్నాయి. మీ సరైన వివరాలు ఇస్తే మరింత కచ్చితంగా ఉంటుంది.
+    Actual values may vary — these are dataset averages for your region.
+  </div>
+</div>
+{% endif %}
+
+<div class="content">
+
+  <!-- YIELD -->
+  <div class="yield-row">
+    <div class="yield-card">
+      <button class="yc-voice" onclick="playTeluguAudio()">🔊</button>
+      <div class="yc-ico">📦</div>
+      <div class="yc-label">Yield per Acre</div>
+      <div class="yc-num">{{ yield_per_acre }}</div>
+      <div class="yc-unit">కిలోగ్రాముల / ఎకరం</div>
+      <div class="yc-te">ఎకరానికి దిగుబడి</div>
+    </div>
+    <div class="yield-card">
+      <button class="yc-voice" onclick="playTeluguAudio()">🔊</button>
+      <div class="yc-ico">🌾</div>
+      <div class="yc-label">Total Yield ({{ acre }} acres)</div>
+      <div class="yc-num">{{ total_yield }}</div>
+      <div class="yc-unit">కిలోగ్రాముల మొత్తం</div>
+      <div class="yc-te">మొత్తం దిగుబడి</div>
+    </div>
+  </div>
+
+  <!-- DISEASE / FERT / PEST -->
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="ic-top">
+        {% set dl = disease|lower %}
+        {% if 'healthy' in dl or 'no disease' in dl %}
+          <span class="badge badge-ok">✅ ఆరోగ్యంగా</span>
+        {% elif 'blight' in dl or 'rot' in dl or 'wilt' in dl or 'blast' in dl %}
+          <span class="badge badge-hi">⚠ అధిక తీవ్రత</span>
+        {% else %}
+          <span class="badge badge-med">⚠ మధ్యస్థ</span>
+        {% endif %}
+        <button class="ic-vbtn" style="border-color:var(--g3);color:var(--g1);"
+          onclick="playTeluguAudio()">🔊</button>
+      </div>
+      <div class="ic-title">🦠 వ్యాధి / Disease</div>
+      <div class="ic-value">{{ disease }}</div>
+      <div class="ic-te">{{ disease_telugu }}</div>
+      {% if confidence > 0 %}
+      <div class="ic-detail">AI నమ్మకం: <strong>{{ confidence }}%</strong> (image-based)</div>
+      {% else %}
+      <div class="ic-detail">పంట రకం ఆధారంగా అంచనా • Estimated based on crop type</div>
+      {% endif %}
+    </div>
+
+    <div class="info-card">
+      <div class="ic-top">
+        <span class="badge badge-fert">💧 ఎరువు</span>
+        <button class="ic-vbtn" style="border-color:var(--b1);color:var(--b1);"
+          onclick="playTeluguAudio()">🔊</button>
+      </div>
+      <div class="ic-title">🌱 ఎరువు / Fertilizer</div>
+      <div class="ic-value" style="font-size:14px;">{{ fertilizer }}</div>
+      <div class="ic-detail">వ్యాధికి నిర్దిష్ట ఎరువు సిఫారసు • Disease-specific recommendation</div>
+    </div>
+
+    <div class="info-card">
+      <div class="ic-top">
+        <span class="badge badge-pest">🧪 మందు</span>
+        <button class="ic-vbtn" style="border-color:#6a1b9a;color:#6a1b9a;"
+          onclick="playTeluguAudio()">🔊</button>
+      </div>
+      <div class="ic-title">💊 మందు / Treatment</div>
+      <div class="ic-value" style="font-size:13px;line-height:1.4;">{{ pesticide }}</div>
+      <div class="ic-detail">వ్యాధికి సరైన పరిష్కారం • Targeted disease treatment</div>
+    </div>
+  </div>
+
+  <!-- CONFIDENCE BAR -->
+  {% if confidence > 0 %}
+  <div class="conf-wrap">
+    <div class="conf-top">
+      <span>🎯 AI Disease Detection Confidence</span>
+      <strong style="color:var(--g2);">{{ confidence }}%</strong>
+    </div>
+    <div class="conf-bar"><div class="conf-fill" id="confFill" style="width:0%"></div></div>
+    <div class="conf-labels"><span>0%</span><span>50%</span><span>100%</span></div>
+  </div>
+  {% endif %}
+
+  <!-- REMEDY -->
+  <div class="remedy-card">
+    <div class="rc-head">
+      <div class="rc-ico">🔬</div>
+      <div>
+        <div class="rc-title">వ్యాధి విశ్లేషణ – Disease Analysis</div>
+        <div class="rc-sub">{{ disease }} | {{ disease_telugu }}</div>
+      </div>
+      <button class="rc-vbtn" onclick="playTeluguAudio()">🔊 పరిష్కారం</button>
+    </div>
+    <div class="rc-body">
+      <div class="rc-section">
+        <h4>✅ పరిష్కార దశలు – Remedy Steps</h4>
+        {% set dl = disease|lower %}
+        {% if 'healthy' in dl or 'no disease' in dl %}
+        <div class="step"><div class="step-n">1</div><div class="step-t"><strong>పంట ఆరోగ్యంగా ఉంది!</strong> నిబంధన NPK ఎరువు వేయండి</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-t">నీరు సరిగ్గా పోయండి, అధికంగా వేయకండి</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-t">వారానికి ఒకసారి పంటను పరిశీలించండి</div></div>
+        {% else %}
+        <div class="step"><div class="step-n">1</div><div class="step-t"><strong>వెంటనే:</strong> ప్రభావిత ఆకులు తొలగించండి • Remove affected leaves immediately</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-t"><strong>మందు:</strong> {{ pesticide }} — ఉదయం లేదా సాయంత్రం స్ప్రే చేయండి</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-t"><strong>ఎరువు:</strong> {{ fertilizer }} వేయండి</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-t">3 రోజుల తర్వాత మళ్ళీ పంటను తనిఖీ చేయండి</div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-t">వ్యాధి తీవ్రంగా ఉంటే స్థానిక వ్యవసాయ అధికారిని సంప్రదించండి</div></div>
+        {% endif %}
+      </div>
+      <div class="rc-section">
+        <h4>⚠ జాగ్రత్తలు – Precautions</h4>
+        {% if 'healthy' in dl or 'no disease' in dl %}
+        <div class="step"><div class="step-n">💧</div><div class="step-t">నీటి మోతాదు సరిగ్గా ఉంచండి</div></div>
+        <div class="step"><div class="step-n">🌿</div><div class="step-t">సమతుల్య ఎరువులు వేయండి</div></div>
+        <div class="step"><div class="step-n">🔍</div><div class="step-t">నిరంతర పంట పర్యవేక్షణ చేయండి</div></div>
+        {% else %}
+        <div class="step"><div class="step-n">🧤</div><div class="step-t">మందు స్ప్రే చేసేటప్పుడు చేతి తొడుగులు వేసుకోండి</div></div>
+        <div class="step"><div class="step-n">💧</div><div class="step-t">పంటపై నీరు అధికంగా ఉంచకండి — వ్యాధి వ్యాప్తి అవుతుంది</div></div>
+        <div class="step"><div class="step-n">🌬</div><div class="step-t">వేడి వాతావరణంలో మందు స్ప్రే చేయకండి</div></div>
+        <div class="step"><div class="step-n">🔄</div><div class="step-t">వ్యాధి గ్రస్త మొక్క అవశేషాలు కాల్చివేయండి</div></div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOADED IMAGE -->
+  {% if image_path %}
+  <div class="img-card">
+    <div class="img-card-head">📸 మీరు అప్‌లోడ్ చేసిన ఆకు ఫోటో – Uploaded Leaf Image</div>
+    <img src="/{{ image_path }}" alt="Uploaded leaf">
+  </div>
+  {% endif %}
+
+  <!-- AUDIO -->
+  <div class="audio-card">
+    <h3>🎧 ఆడియో నివేదిక – Audio Report (తెలుగు)</h3>
+    <div class="audio-row">
+      <span class="audio-label">🔊 తెలుగు:</span>
+      <audio controls src="/{{ te_audio }}"></audio>
+    </div>
+    <div class="audio-row">
+      <span class="audio-label">🔊 English:</span>
+      <audio controls src="/{{ en_audio }}"></audio>
+    </div>
+  </div>
+
+  <!-- TIPS -->
+  <div class="tips-card">
+    <div class="tips-head">
+      <span style="font-size:22px;">💡</span>
+      <h3>రైతు సలహాలు – Farmer Tips</h3>
+    </div>
+    <div class="tip"><div class="tip-ico">🌱</div>
+      <div class="tip-text tip-te">పంట మార్పిడి (crop rotation) వ్యాధులు తగ్గిస్తుంది<br>
+        <em style="font-family:'Poppins',sans-serif;font-size:12px;">Crop rotation prevents disease recurrence</em></div></div>
+    <div class="tip"><div class="tip-ico">💧</div>
+      <div class="tip-text tip-te">తెల్లవారుజామున నీరు పోయడం వ్యాధులను తగ్గిస్తుంది<br>
+        <em style="font-family:'Poppins',sans-serif;font-size:12px;">Early morning watering reduces fungal diseases</em></div></div>
+    <div class="tip"><div class="tip-ico">🔍</div>
+      <div class="tip-text tip-te">వారానికి ఒకసారి పంటను పరిశీలించండి — ముందస్తు గుర్తింపు ముఖ్యం<br>
+        <em style="font-family:'Poppins',sans-serif;font-size:12px;">Weekly scouting enables early disease detection</em></div></div>
+    <div class="tip"><div class="tip-ico">📸</div>
+      <div class="tip-text tip-te">చికిత్స తర్వాత ఆకు ఫోటో తీసి మళ్ళీ AI తో తనిఖీ చేయండి<br>
+        <em style="font-family:'Poppins',sans-serif;font-size:12px;">Re-upload a photo after treatment to verify recovery</em></div></div>
+  </div>
+
+  <div class="action-row">
+    <a href="/" class="btn-p">🌾 మళ్ళీ విశ్లేషించు – New Analysis</a>
+    <button class="btn-o" onclick="window.print()">🖨 ముద్రించు – Print</button>
+    <button class="btn-o" onclick="playTeluguAudio()">🔊 మళ్ళీ వినండి</button>
+  </div>
+</div>
+<footer>🌾 పంట సహాయకుడు – Crop AI Assistant | AI Powered | రైతు మిత్రుడు</footer>
+</div>
+
+<script>
+const CONF = {{ confidence }};
+const TE_AUDIO_SRC = "/{{ te_audio }}";
+
+// Single shared audio player — same gTTS voice everywhere
+const mainAudio = new Audio(TE_AUDIO_SRC);
+
+function playTeluguAudio(){
+  mainAudio.currentTime = 0;
+  mainAudio.play();
+}
+function stopAudio(){
+  mainAudio.pause();
+  mainAudio.currentTime = 0;
+}
+function speakResults(){ playTeluguAudio(); }
+function speakRemedy(){ playTeluguAudio(); }
+
+window.addEventListener('load',()=>{
+  const fill=document.getElementById('confFill');
+  if(fill) setTimeout(()=>fill.style.width=CONF+'%',400);
+  // Auto-play gTTS Telugu audio after page loads
+  setTimeout(()=>playTeluguAudio(), 1200);
+});
+</script>
+</body>
+</html>
